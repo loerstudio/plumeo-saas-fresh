@@ -48,7 +48,7 @@ export default function RegisterPage() {
           routing="path"
           path="/register"
           signInUrl="/login"
-          redirectUrl="/dashboard"
+          forceRedirectUrl="/dashboard"
         />
       </div>
     </div>
