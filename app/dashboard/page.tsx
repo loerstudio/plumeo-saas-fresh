@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useUser, useClerk } from '@clerk/nextjs'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -35,6 +36,8 @@ import {
 
 export default function Dashboard() {
   const router = useRouter()
+  const { user, isLoaded, isSignedIn } = useUser()
+  const { signOut } = useClerk()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [connections, setConnections] = useState({
     googleSheets: false,
@@ -43,18 +46,30 @@ export default function Dashboard() {
   })
   const [automationActive, setAutomationActive] = useState(false)
   const [stats, setStats] = useState({
-    emailsSent: 1247,
-    whatsappSent: 892,
+    emailsSent: 0,
+    whatsappSent: 0,
     lastRun: null as Date | null
   })
 
   useEffect(() => {
-    // Check if user is logged in
-    const user = localStorage.getItem('user')
-    if (!user) {
+    // Check if user is logged in with Clerk
+    if (isLoaded && !isSignedIn) {
       router.push('/login')
     }
-  }, [router])
+  }, [isLoaded, isSignedIn, router])
+
+  useEffect(() => {
+    // Load real data when user is authenticated
+    if (user) {
+      // Real stats will be loaded from database
+      // Starting with 0 to show actual progress
+      setStats({
+        emailsSent: 0,
+        whatsappSent: 0,
+        lastRun: null
+      })
+    }
+  }, [user])
 
   const connectGoogleSheets = () => {
     setTimeout(() => {
@@ -83,8 +98,8 @@ export default function Dashboard() {
     }
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem('user')
+  const handleLogout = async () => {
+    await signOut()
     router.push('/')
   }
 
@@ -156,10 +171,10 @@ export default function Dashboard() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-white truncate">
-                  Coach Pro
+                  {user?.firstName || 'Coach'} {user?.lastName || ''}
                 </p>
                 <p className="text-xs text-gray-400 truncate">
-                  coach@plumio.studio
+                  {user?.primaryEmailAddress?.emailAddress || 'Loading...'}
                 </p>
               </div>
               <Button

@@ -1,95 +1,55 @@
-'use client'
+import { SignIn } from '@clerk/nextjs'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Mail, Lock, ArrowRight } from 'lucide-react'
-
-export default function Login() {
-  const router = useRouter()
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  })
-  const [loading, setLoading] = useState(false)
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-
-    // Mock login - replace with real Supabase auth
-    localStorage.setItem('user', JSON.stringify({ email: formData.email }))
-
-    setTimeout(() => {
-      router.push('/dashboard')
-    }, 1000)
-  }
-
+export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-600">
-      <div className="absolute inset-0 bg-black/20" />
+    <div className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center">
+      {/* Subtle gradient background */}
+      <div className="fixed inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(120,40,200,0.15),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(40,90,235,0.08),transparent_50%)]" />
+      </div>
 
-      <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
-        <div className="w-full max-w-md">
-          <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl p-8">
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Bentornato!</h1>
-              <p className="text-gray-600">Accedi al tuo account CoachFlow</p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                    placeholder="mario@tuocoaching.com"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="password"
-                    required
-                    value={formData.password}
-                    onChange={(e) => setFormData({...formData, password: e.target.value})}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                    placeholder="La tua password"
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-lg font-bold hover:shadow-lg transition flex items-center justify-center gap-2"
-              >
-                {loading ? 'Accesso in corso...' : (
-                  <>
-                    Accedi <ArrowRight className="w-5 h-5" />
-                  </>
-                )}
-              </button>
-            </form>
-
-            <div className="mt-6 text-center">
-              <p className="text-gray-600">
-                Non hai un account?{' '}
-                <button onClick={() => router.push('/register')} className="text-purple-600 font-medium hover:underline">
-                  Registrati
-                </button>
-              </p>
-            </div>
-          </div>
-        </div>
+      <div className="relative z-10">
+        <SignIn
+          appearance={{
+            elements: {
+              rootBox: "mx-auto",
+              card: "bg-black/50 backdrop-blur-xl border border-white/10 shadow-2xl",
+              headerTitle: "text-white text-2xl font-semibold",
+              headerSubtitle: "text-gray-400",
+              socialButtonsBlockButton: "bg-white/10 border-white/10 text-white hover:bg-white/20",
+              socialButtonsBlockButtonText: "text-white font-medium",
+              dividerLine: "bg-white/10",
+              dividerText: "text-gray-400",
+              formFieldLabel: "text-gray-300",
+              formFieldInput: "bg-white/5 border-white/10 text-white placeholder:text-gray-500",
+              formButtonPrimary: "bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white",
+              footerActionLink: "text-violet-400 hover:text-violet-300",
+              identityPreviewText: "text-white",
+              identityPreviewEditButton: "text-violet-400 hover:text-violet-300",
+              formFieldInputShowPasswordButton: "text-gray-400 hover:text-white",
+              otpCodeFieldInput: "bg-white/5 border-white/10 text-white",
+              formResendCodeLink: "text-violet-400 hover:text-violet-300",
+            },
+            layout: {
+              socialButtonsPlacement: "bottom",
+              showOptionalFields: false,
+            },
+            variables: {
+              colorPrimary: "#8b5cf6",
+              colorBackground: "transparent",
+              colorText: "#ffffff",
+              colorTextSecondary: "#9ca3af",
+              colorDanger: "#ef4444",
+              borderRadius: "0.75rem",
+              fontFamily: "Inter, system-ui, sans-serif",
+            }
+          }}
+          routing="path"
+          path="/login"
+          signUpUrl="/register"
+          redirectUrl="/dashboard"
+        />
       </div>
     </div>
   )
